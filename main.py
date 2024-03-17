@@ -5,20 +5,49 @@ import numpy as np
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
+import os
+from scipy.stats import poisson
+import pandas as pd
 
 pd.set_option('display.max_columns', 200)
 st.set_page_config(layout='wide')
 
+def concat():
+    files = [file for file in os.listdir() if file.endswith('.csv')]
+
+    df = pd.DataFrame()
+    for file in files:
+        df_temp = pd.read_csv(file)
+        df = pd.concat([df, df_temp])
+    df.to_csv('./resultado/compilado.csv', index=False)
+
 def run():
-    df = pd.read_csv('E0.csv')
+    df = pd.read_csv('./resultado/compilado.csv')
     df = df[['Div', 'Date', 'Time', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HTHG', 'HTAG', 'HTR', 'HS', 'AS', 'HST', 'AST', 'HF', 'AF', 'HC', 'AC', 'B365H', 'B365D', 'B365A']]
     # st.table(df)
+    df['Div'] = df['Div'].map({
+    "B1": "BÉLGICA 1ª DIVISÃO",
+    "D1": "ALEMANHA 1ª DIVISÃO",
+    "D2": "ALEMANHA 2ª DIVISÃO",
+    "E0": "INGLATERRA 1ª DIVISÃO",
+    "E1": "INGLATERRA 2ª DIVISÃO",
+    "F1": "FRANÇA 1ª DIVISÃO",
+    "F2": "FRANÇA 2ª DIVISÃO",
+    "G1": "GRÉCIA 1ª DIVISÃO",
+    "I1": "ITÁLIA 1ª DIVISÃO",
+    "I2": "ITÁLIA 2ª DIVISÃO",
+    "N1": "HOLANDA 1ª DIVISÃO",
+    "P1": "PORTUGAL 1ª DIVISÃO",
+    "T1": "TURQUIA 1ª DIVISÃO"
+})
 
     df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%Y')
 
-
+    # liga = st.selectbox('Selecione a liga', sorted(df2['Div'].unique()))
+    # df = df2[df2['Div'] == liga]
     mandante = st.selectbox('Selecione o time mandante', sorted(df['HomeTeam'].unique()))
     visitante = st.selectbox('Selecione o time visitante', sorted(df['AwayTeam'].unique()))
+
 
     def pontos(x):
         if x == 'A':
@@ -60,18 +89,12 @@ def run():
     df['IntensidadeVisitanteAcumulada'] = df.groupby('AwayTeam')['IntensidadeVisitante'].cumsum()
     df['PontosVisitanteAcumulados'] = df.groupby('AwayTeam')['PontosVisitante'].cumsum()
     col1, col2 = st.columns((2))
-    pontos_m = df.groupby('HomeTeam')['PontosCasa'].get_group(mandante).sum() + df.groupby('AwayTeam')['PontosVisitante'].get_group(visitante).sum()
+    pontos_m = df.groupby('HomeTeam')['PontosCasa'].get_group(mandante).sum() + df.groupby('AwayTeam')['PontosVisitante'].get_group(mandante).sum()
     col1.subheader(f'O {mandante} tem {pontos_m} pontos')
 
-    pontos_v = df.groupby('HomeTeam')['PontosCasa'].get_group(visitante).sum() + df.groupby('AwayTeam')['PontosVisitante'].get_group(mandante).sum()
+    pontos_v = df.groupby('HomeTeam')['PontosCasa'].get_group(visitante).sum() + df.groupby('AwayTeam')['PontosVisitante'].get_group(visitante).sum()
     col2.subheader(f'O {visitante} tem {pontos_v} pontos')
-    fig = px.line(df, x='Date', y='PontosCasaAcumulados', color='HomeTeam', title='Pontos Acumulados em Casa')
-    fig.update_layout(xaxis_title='Data', yaxis_title='Pontos Acumulados')
-    col1.plotly_chart(fig, use_container_width=True,)
 
-    fig = px.line(df, x='Date', y='PontosVisitanteAcumulados', color='AwayTeam', title='Pontos Acumulados como Visitante')
-    fig.update_layout(xaxis_title='Data', yaxis_title='Pontos Acumulados')
-    col2.plotly_chart(fig, use_container_width=True,)
 
     def calcular_odds(row):
         if row['FTR'] == 'H':
@@ -89,6 +112,19 @@ def run():
     df_m_qv = df[df['AwayTeam'] == mandante]
     df_v = df[df['AwayTeam'] == visitante]
     df_v_qm = df[df['HomeTeam'] == visitante]
+
+    retorna_div_mandante = df[df['HomeTeam'] == mandante]['Div'].unique()
+    liga_mandante = df.loc[df['Div'] == retorna_div_mandante[0]]
+    retorna_div_visitante = df[df['AwayTeam'] == visitante]['Div'].unique()
+    liga_visitante = df.loc[df['Div'] == retorna_div_visitante[0]]
+
+    fig = px.line(liga_mandante, x='Date', y='PontosCasaAcumulados', color='HomeTeam', title='Pontos Acumulados em Casa')
+    fig.update_layout(xaxis_title='Data', yaxis_title='Pontos Acumulados')
+    col1.plotly_chart(fig, use_container_width=True,)
+
+    fig = px.line(liga_visitante, x='Date', y='PontosVisitanteAcumulados', color='AwayTeam', title='Pontos Acumulados como Visitante')
+    fig.update_layout(xaxis_title='Data', yaxis_title='Pontos Acumulados')
+    col2.plotly_chart(fig, use_container_width=True,)
 
     fig = px.line(df_m, x='Date', y='PontosCasaAcumulados', title=f'Pontos Acumulados em Casa do {mandante}')
     fig.update_layout(xaxis_title='Data', yaxis_title='Pontos Acumulados')
@@ -148,6 +184,14 @@ def run():
     fig.update_layout(xaxis_title='Data', yaxis_title='Intensidade Acumulada')
     b.plotly_chart(fig, use_container_width=True,)
 
+    fig = px.bar(df_m, x='FTR', title=f'Vitórias, Empates e Derrotas do {mandante}')
+    fig.update_layout(xaxis_title='Resultado', yaxis_title='Quantidade')
+    a.plotly_chart(fig, use_container_width=True,)
+
+    fig = px.bar(df_v, x='FTR', title=f'Vitórias, Empates e Derrotas do {visitante}')
+    fig.update_layout(xaxis_title='Resultado', yaxis_title='Quantidade')
+    b.plotly_chart(fig, use_container_width=True,)
+
     st.divider()
     a, b = st.columns(2)
     # Escrevendo a média de gols feitos pelo time da casa
@@ -188,22 +232,42 @@ def run():
     # Vamos criar 4 colunas no df, BackCasa, BackCasaEmpate, BackVisitante, BackVisitanteEmpate
     a, b = st.columns(2)
     # Escrevendo o ROI do time da casa com BackCasa
-    a.subheader(f'O ROI do {mandante} com BackCasa é de {round(df_m["BackCasa"].mean() * 100, 2)}%')
+    a.subheader(f'O ROI do {mandante} com BackCasa é de {round(df_m["BackCasa"].sum(), 2)}')
 
     # Escrevendo o ROI do time da casa com BackCasaEmpate
-    a.subheader(f'O ROI do {mandante} com BackCasaEmpate é de {round(df_m["BackCasaEmpate"].mean() * 100, 2)}%')
+    a.subheader(f'O ROI do {mandante} com BackCasaEmpate é de {round(df_m["BackCasaEmpate"].sum(), 2)}')
 
     # Escrevendo o ROI do time da casa com BackVisitante
-    a.subheader(f'O ROI do {mandante} com BackVisitante é de {round(df_m["BackVisitante"].mean() * 100, 2)}%')
+    a.subheader(f'O ROI do {mandante} com BackVisitante é de {round(df_m["BackVisitante"].sum(), 2)}')
 
     # Escrevendo o ROI do time visitante com BackVisitante
-    b.subheader(f'O ROI do {visitante} com BackVisitante é de {round(df_v["BackVisitante"].mean() * 100, 2)}%')
+    b.subheader(f'O ROI do {visitante} com BackVisitante é de {round(df_v["BackVisitante"].sum(), 2)}')
 
     # Escrevendo o ROI do time visitante com BackVisitanteEmpate
-    b.subheader(f'O ROI do {visitante} com BackVisitanteEmpate é de {round(df_v["BackVisitanteEmpate"].mean() * 100, 2)}%')
+    b.subheader(f'O ROI do {visitante} com BackVisitanteEmpate é de {round(df_v["BackVisitanteEmpate"].sum(), 2)}')
 
     # Escrevendo o ROI do time visitante com BackCasa
-    b.subheader(f'O ROI do {visitante} com BackCasa é de {round(df_v["BackCasa"].mean() * 100, 2)}%')
+    b.subheader(f'O ROI do {visitante} com BackCasa é de {round(df_v["BackCasa"].sum(), 2)}')
+
+    lambda_casa = df_m['FTHG'].mean() * df_m['FTAG'].mean()
+    lambda_visitante = df_v['FTAG'].mean() * df_v['FTHG'].mean()
+    
+
+    resultados = []
+    for gols_casa in range(6):
+        for gols_fora in range(6):
+            probabilidade_resultado = poisson.pmf(gols_casa, lambda_casa) * poisson.pmf(gols_fora, lambda_visitante)
+            resultados.append({'GolsCasa': gols_casa, 'GolsFora': gols_fora, 'Probabilidade': probabilidade_resultado})
+
+    df_resultados = pd.DataFrame(resultados)
+    df_resultados = df_resultados.pivot_table(index='GolsCasa', columns='GolsFora', values='Probabilidade')
+    fig = px.imshow(df_resultados, labels=dict(x='Gols Visitante', y='Gols Mandante', color='Probabilidade'), title='Probabilidade de Resultados',)
+    fig.update_xaxes(nticks=6)
+    fig.update_yaxes(nticks=6)
+    fig.update_layout(width=800, height=600)
+    fig.update_traces(text=df_resultados.values, texttemplate='%{text:.2f}', textfont=dict(color='black'))
+    fig.update_layout(coloraxis_colorbar=dict(title='Probabilidade'))
+    st.plotly_chart(fig, use_container_width=True)
 
 
 with open('config.yaml') as f:
@@ -220,7 +284,8 @@ authenticator.login()
 
 if st.session_state['authentication_status']:
     st.write(f'You are logged in, Sr *{st.session_state["name"]}*')
-    st.title('Análise de Dados da Premier League')
+    st.title('Painel do Green')
+    concat()
     run()
     # if authenticator.logout():
     #     st.rerun()
