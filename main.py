@@ -38,6 +38,8 @@ def run():
     "I2": "ITÁLIA 2ª DIVISÃO",
     "N1": "HOLANDA 1ª DIVISÃO",
     "P1": "PORTUGAL 1ª DIVISÃO",
+    "SP1": "ESPANHA 1ª DIVISÃO",
+    "SP2": "ESPANHA 2ª DIVISÃO",
     "T1": "TURQUIA 1ª DIVISÃO"
 })
 
@@ -66,7 +68,6 @@ def run():
 
     df['PontosCasa'], df['PontosVisitante'] = zip(*df['FTR'].apply(pontos))
     df['IntensidadeMandante'], df['IntensidadeVisitante'] = zip(*df.apply(intensidade, axis=1))
-    df
 
     df['PontosCasaAcumulados'] = df.groupby('HomeTeam')['PontosCasa'].cumsum()
     df['FTHGAcumuladoCasa'] = df.groupby('HomeTeam')['FTHG'].cumsum()
@@ -195,59 +196,59 @@ def run():
     st.divider()
     a, b = st.columns(2)
     # Escrevendo a média de gols feitos pelo time da casa
-    a.subheader(f'A média de gols feitos pelo {mandante} em casa é de {round(df_m["FTHG"].mean(), 2)}')
+    a.write(f'A média de gols feitos pelo {mandante} em casa é de {round(df_m["FTHG"].mean(), 2)}')
     # Escrevendo a média de gols sofridos pelo time da casa
-    a.subheader(f'A média de gols sofridos pelo {mandante} em casa é de {round(df_m["FTAG"].mean(), 2)}')
+    a.write(f'A média de gols sofridos pelo {mandante} em casa é de {round(df_m["FTAG"].mean(), 2)}')
 
     # Escrevendo a média de gols feitos pelo time visitante
-    b.subheader(f'A média de gols feitos pelo {visitante} como visitante é de {round(df_v["FTAG"].mean(), 2)}')
+    b.write(f'A média de gols feitos pelo {visitante} como visitante é de {round(df_v["FTAG"].mean(), 2)}')
     # Escrevendo a média de gols sofridos pelo time visitante
-    b.subheader(f'A média de gols sofridos pelo {visitante} como visitante é de {round(df_v["FTHG"].mean(), 2)}')
+    b.write(f'A média de gols sofridos pelo {visitante} como visitante é de {round(df_v["FTHG"].mean(), 2)}')
 
     # Escrevendo o desvio padrão de gols feitos pelo time da casa
-    a.subheader(f'O desvio padrão de gols feitos pelo {mandante} em casa é de {round(df_m["FTHG"].std(), 2)}')
+    a.write(f'O desvio padrão de gols feitos pelo {mandante} em casa é de {round(df_m["FTHG"].std(), 2)}')
 
     # Escrevendo o desvio padrão de gols feitos pelo time visitante
-    b.subheader(f'O desvio padrão de gols feitos pelo {visitante} como visitante é de {round(df_v["FTAG"].std(), 2)}')
+    b.write(f'O desvio padrão de gols feitos pelo {visitante} como visitante é de {round(df_v["FTAG"].std(), 2)}')
 
     # Escrevendo o desvio padrão de gols sofridos pelo time da casa
-    a.subheader(f'O desvio padrão de gols sofridos pelo {mandante} em casa é de {round(df_m["FTAG"].std(), 2)}')
+    a.write(f'O desvio padrão de gols sofridos pelo {mandante} em casa é de {round(df_m["FTAG"].std(), 2)}')
 
     # Escrevendo o desvio padrão de gols sofridos pelo time visitante
-    b.subheader(f'O desvio padrão de gols sofridos pelo {visitante} como visitante é de {round(df_v["FTHG"].std(), 2)}')
+    b.write(f'O desvio padrão de gols sofridos pelo {visitante} como visitante é de {round(df_v["FTHG"].std(), 2)}')
 
     # Escrevendo a variância de gols feitos pelo time da casa
-    a.subheader(f'A variância de gols feitos pelo {mandante} em casa é de {round(df_m["FTHG"].var(), 2)}')
+    a.write(f'A variância de gols feitos pelo {mandante} em casa é de {round(df_m["FTHG"].var(), 2)}')
 
     # Escrevendo a variância de gols feitos pelo time visitante
-    b.subheader(f'A variância de gols feitos pelo {visitante} como visitante é de {round(df_v["FTAG"].var(), 2)}')
+    b.write(f'A variância de gols feitos pelo {visitante} como visitante é de {round(df_v["FTAG"].var(), 2)}')
 
     # Escrevendo a variância de gols sofridos pelo time da casa
-    a.subheader(f'A variância de gols sofridos pelo {mandante} em casa é de {round(df_m["FTAG"].var(), 2)}')
+    a.write(f'A variância de gols sofridos pelo {mandante} em casa é de {round(df_m["FTAG"].var(), 2)}')
 
     # Escrevendo a variância de gols sofridos pelo time visitante
-    b.subheader(f'A variância de gols sofridos pelo {visitante} como visitante é de {round(df_v["FTHG"].var(), 2)}')
+    b.write(f'A variância de gols sofridos pelo {visitante} como visitante é de {round(df_v["FTHG"].var(), 2)}')
 
     st.divider()
     # Vamos criar 4 colunas no df, BackCasa, BackCasaEmpate, BackVisitante, BackVisitanteEmpate
     a, b = st.columns(2)
     # Escrevendo o ROI do time da casa com BackCasa
-    a.subheader(f'O ROI do {mandante} com BackCasa é de {round(df_m["BackCasa"].sum(), 2)}')
+    a.write(f'O ROI do {mandante} com BackCasa é de {round(df_m["BackCasa"].sum(), 2)}')
 
     # Escrevendo o ROI do time da casa com BackCasaEmpate
-    a.subheader(f'O ROI do {mandante} com BackCasaEmpate é de {round(df_m["BackCasaEmpate"].sum(), 2)}')
+    a.write(f'O ROI do {mandante} com BackCasaEmpate é de {round(df_m["BackCasaEmpate"].sum(), 2)}')
 
     # Escrevendo o ROI do time da casa com BackVisitante
-    a.subheader(f'O ROI do {mandante} com BackVisitante é de {round(df_m["BackVisitante"].sum(), 2)}')
+    a.write(f'O ROI do {mandante} com BackVisitante é de {round(df_m["BackVisitante"].sum(), 2)}')
 
     # Escrevendo o ROI do time visitante com BackVisitante
-    b.subheader(f'O ROI do {visitante} com BackVisitante é de {round(df_v["BackVisitante"].sum(), 2)}')
+    b.write(f'O ROI do {visitante} com BackVisitante é de {round(df_v["BackVisitante"].sum(), 2)}')
 
     # Escrevendo o ROI do time visitante com BackVisitanteEmpate
-    b.subheader(f'O ROI do {visitante} com BackVisitanteEmpate é de {round(df_v["BackVisitanteEmpate"].sum(), 2)}')
+    b.write(f'O ROI do {visitante} com BackVisitanteEmpate é de {round(df_v["BackVisitanteEmpate"].sum(), 2)}')
 
     # Escrevendo o ROI do time visitante com BackCasa
-    b.subheader(f'O ROI do {visitante} com BackCasa é de {round(df_v["BackCasa"].sum(), 2)}')
+    b.write(f'O ROI do {visitante} com BackCasa é de {round(df_v["BackCasa"].sum(), 2)}')
 
     lambda_casa = df_m['FTHG'].mean() * df_m['FTAG'].mean()
     lambda_visitante = df_v['FTAG'].mean() * df_v['FTHG'].mean()
@@ -261,14 +262,29 @@ def run():
 
     df_resultados = pd.DataFrame(resultados)
     df_resultados = df_resultados.pivot_table(index='GolsCasa', columns='GolsFora', values='Probabilidade')
-    fig = px.imshow(df_resultados, labels=dict(x='Gols Visitante', y='Gols Mandante', color='Probabilidade'), title='Probabilidade de Resultados',)
+    fig = px.imshow(df_resultados, labels=dict(x='Gols Mandante', y='Gols Visitante', color='Probabilidade'), title='Probabilidade de Resultados',)
     fig.update_xaxes(nticks=6)
     fig.update_yaxes(nticks=6)
     fig.update_layout(width=800, height=600)
     fig.update_traces(text=df_resultados.values, texttemplate='%{text:.2f}', textfont=dict(color='black'))
     fig.update_layout(coloraxis_colorbar=dict(title='Probabilidade'))
     st.plotly_chart(fig, use_container_width=True)
-
+    # print(df_resultados)
+    empate = np.trace(df_resultados)
+    st.write(f'Soma das Probabilidades de empate por Poisson: {round(empate * 100 , 2)}')
+    sum_result = 0
+    for i in range(df_resultados.shape[0]):  # Para cada linha
+        for j in range(df_resultados.shape[1]):  # Para cada coluna
+            if i > j:  # Verificando se o índice da linha é maior que o índice da coluna
+                sum_result += df_resultados.iloc[i, j]  # Adicionando o valor à soma
+    st.write(f'Soma das Probabilidades de Vitória do Visitante por Poisson: {round(sum_result * 100 , 2)}')
+    soma_visitante = 0
+    for i in range(df_resultados.shape[0]):  # Para cada linha
+        for j in range(df_resultados.shape[1]):  # Para cada coluna
+            if i < j:  # Verificando se o índice da linha é menor que o índice da coluna
+                soma_visitante += df_resultados.iloc[i, j]  # Adicionando o valor à soma
+    st.write(f'Soma das Probabilidades de Vitória do Mandante por Poisson: {round(soma_visitante * 100 , 2)}')
+    
 
 with open('config.yaml') as f:
     config = yaml.load(f, Loader=SafeLoader)
