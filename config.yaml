@@ -1,13 +1,14 @@
 credentials:
   usernames:
     admin:
-      email: jsmith@gmail.com
       name: Administrador
       password: giuberttimarquez # To be replaced with hashed password
     486asfaswfae:
-      email: rbriggs@gmail.com
       name: Rebecca Briggs
-      password: 486asfaswfae # To be replaced with hashed password
+      password: gasgagwsgjtjd
+    4619asfuqb:
+      name: 4619asfuqb
+      password: 4868g4as4gq
 cookie:
   expiry_days: 30
   key: random_signature_key # Must be string
