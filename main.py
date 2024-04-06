@@ -262,7 +262,7 @@ def run():
 
     df_resultados = pd.DataFrame(resultados)
     df_resultados = df_resultados.pivot_table(index='GolsCasa', columns='GolsFora', values='Probabilidade')
-    fig = px.imshow(df_resultados, labels=dict(x='Gols Mandante', y='Gols Visitante', color='Probabilidade'), title='Probabilidade de Resultados',)
+    fig = px.imshow(df_resultados, labels=dict(x='Gols Visitante', y='Gols Mandante', color='Probabilidade'), title='Probabilidade de Resultados',)
     fig.update_xaxes(nticks=6)
     fig.update_yaxes(nticks=6)
     fig.update_layout(width=800, height=600)
