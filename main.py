@@ -277,13 +277,13 @@ def run():
         for j in range(df_resultados.shape[1]):  # Para cada coluna
             if i > j:  # Verificando se o índice da linha é maior que o índice da coluna
                 sum_result += df_resultados.iloc[i, j]  # Adicionando o valor à soma
-    st.write(f'Soma das Probabilidades de Vitória do Visitante por Poisson: {round(sum_result * 100 , 2)}')
+    st.write(f'Soma das Probabilidades de Vitória do Mandante por Poisson: {round(sum_result * 100 , 2)}')
     soma_visitante = 0
     for i in range(df_resultados.shape[0]):  # Para cada linha
         for j in range(df_resultados.shape[1]):  # Para cada coluna
             if i < j:  # Verificando se o índice da linha é menor que o índice da coluna
                 soma_visitante += df_resultados.iloc[i, j]  # Adicionando o valor à soma
-    st.write(f'Soma das Probabilidades de Vitória do Mandante por Poisson: {round(soma_visitante * 100 , 2)}')
+    st.write(f'Soma das Probabilidades de Vitória do Visitante por Poisson: {round(soma_visitante * 100 , 2)}')
     
 
 with open('config.yaml') as f:
